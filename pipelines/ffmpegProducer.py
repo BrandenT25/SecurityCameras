@@ -1,6 +1,9 @@
 import cv2
 
-def run(stream_queue, ffmpeg_queue):
+def run(stream_queue : Queue, ffmpeg_queue : Queue) -> None:
+    """
+    Function that takes in the yolo frame and encodes it in ffmpeg format and transfers it to the web server
+    """
     while True:
         frame = stream_queue.get()
         if frame is None:

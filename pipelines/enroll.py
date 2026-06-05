@@ -4,18 +4,23 @@ import cv2
 import os
 import numpy as np
 import time
+import json
+from data.people.people_db import is_person_known, save_person
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-
 FACES_DIR = os.path.join(BASE_DIR, "data", "faces")
 CLUSTERS_DIR = os.path.join(BASE_DIR, "data", "clusters")
-RECORDINGS_DIR = os.path.join(BASE_DIR, "data", "recordings")
-MODELS_DIR = os.path.join(BASE_DIR, "models")
 
-def cosine_similarity(a, b):
+def cosine_similarity(a, b) -> float:
+    '''
+    Basic function to extract the angle of vectors and compare them to each other
+    '''
     return np.dot(a, b) / (np.linalg.norm(a) * np.linalg.norm(b))
 
 
-def cluster_assign(embedding, file_name):
+def cluster_assign(embedding, file_name) -> None:
+    '''
+    function that takes the npy embedding of a picture and assigns it to a npy vector cluster based on cosine similarity
+    '''
     os.makedirs("clusters/", exist_ok=True)
     best_match = None
     best_score = 0
@@ -42,8 +47,21 @@ def cluster_assign(embedding, file_name):
             next_id = 1
     
         np.save(f"{CLUSTERS_DIR}/person_{next_id:03d}.npy", embedding.reshape(1, -1))
+        json_filename = f"{CLUSTERS_DIR}/person_{next_id:03d}.json"
+        metadata = {
+            "label" : "unknown_{next_id:03d}",
+            "person_id" : next_id,
+            "status": "unverified"
+        }
+        with open(json_filename, "w") as f:
+            json.dump(metadata, f, indent=4)
+        save_person(metadata)
 
-def enroll_new_faces(app):
+def enroll_new_faces() -> None:
+    """
+    Function that takes a jpg image and creates a npy embedding 
+    using insight face then calls the cluster assign function
+    """
     for filename in os.listdir("faces/"):
         if filename.endswith(".jpg"):
             print(f"processing {filename}")
@@ -66,9 +84,11 @@ def enroll_new_faces(app):
             else:
                 print(f"no face found in {filename}")
 
-def run():
+def run() -> None:
+    # build an object of insightface's FaceAnalysis
     app = FaceAnalysis()
-    app.prepare(ctx_id=0)
+    app.prepare(ctx_id=0) # ctx_id=0 indicates that you want to use gpu for processes make sure you have cuda installed
     while True:
+        # enrolls new faces detected every 5 minutes
         enroll_new_faces(app)
-        time.sleep(3600)
+        time.sleep(300)

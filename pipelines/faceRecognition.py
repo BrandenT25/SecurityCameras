@@ -7,15 +7,27 @@ import os
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 FACES_DIR = os.path.join(BASE_DIR, "data", "faces")
-def is_sharp(image, threshold=100):
+def is_sharp(image, threshold=100) -> bool:
+    """
+    Function to filter if image is image has enough sharpness
+    """
     gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
     variance = cv2.Laplacian(gray, cv2.CV_64F).var()
     return variance > threshold
 
 
-def is_large_enough(crop_w, crop_h, min_size=40):
+def is_large_enough(crop_w : int, crop_h : int, min_size=40) -> bool:
+    """
+    Function to filter images too small current 40x40
+    """
     return crop_w >= min_size and crop_h >= min_size
-def valid_face_angle(face, face_mesh, w, h, c):
+
+def valid_face_angle(face, face_mesh, w : int, h : int, c) -> bool:
+    """
+    function to use mediapipes face landmarks which takes
+    left eye, right eye, nose tip, left mouth corner, right mouth corner, and chin
+    to determine the face angle and filter out if yaw, pitch, or roll are too much
+    """
     results = face_mesh.process(face)
     if results.multi_face_landmarks:
         for face_landmarks in results.multi_face_landmarks:
@@ -75,7 +87,11 @@ def valid_face_angle(face, face_mesh, w, h, c):
     return False
 
 
-def run(face_rec_queue):
+def run(face_rec_queue : Queue, retrieve_queue: Queue ) -> None:
+    """
+    Function That takes in the yolo frame and converts it into an rgb frame then recognized face locations
+    and crops the images based on those locations
+    """
     try:
         print("running facial recognition")
         mp_face_mesh = mp.solutions.face_mesh
@@ -96,6 +112,7 @@ def run(face_rec_queue):
                 left, right = max(0, left), min(w, right)
                 
                 cropped_face = frame[top:bottom, left:right]
+                retrieve_queue.put(cropped_face)
                 crop_h, crop_w, crop_c = cropped_face.shape
                 print(f"crop size: {crop_w}x{crop_h}")
                 rgb_crop = cv2.cvtColor(cropped_face, cv2.COLOR_BGR2RGB)

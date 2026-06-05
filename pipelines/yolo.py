@@ -5,7 +5,11 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 MODELS_DIR = os.path.join(BASE_DIR, "models")
 
-def run(frame_queue, alert_queue, stream_queue, face_rec_queue):
+def run(frame_queue : Queue, retrieve_queue : Queue, stream_queue : Queue, face_rec_queue : Queue) -> None:
+    """
+    Function that uses yolo to indetify people. Must pass a certain confidence interval and to alert must be on the
+    screen for a certain amount of time.
+    """
     model = YOLO(f"{MODELS_DIR}/yolov8n.pt")
     model.to("cuda")
     ALERT_DELAY = 2
@@ -48,14 +52,6 @@ def run(frame_queue, alert_queue, stream_queue, face_rec_queue):
                     time_since_alert = start_time - last_alert
                     if start_time - last_alert >= ALERT_COOLDOWN:
                     # Alert Logic
-                        print("FIRING ALERT")
-                        alert_queue.put({
-                            "Timestamp" : start_time,
-                            "camera" : 0,
-                            "confidence": float(boxes.conf[list(track_ids).index(track_id)].item()),
-                            "track_id": track_id
-
-                        })
                         face_rec_queue.put(frame)
                         alert_cooldowns[track_id] = start_time
                         del person_timers[track_id]

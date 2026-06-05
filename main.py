@@ -1,21 +1,38 @@
 from multiprocessing import Process, Queue
-from pipelines import alert
-from pipelines import server
-from pipelines import camera
-from pipelines import ffmpegProducer
-from pipelines import yolo
-from pipelines import recorder
-from pipelines import faceRecognition
-from pipelines import enroll
+from pipelines import alert, server, camera, ffmpegProducer, yolo, recorder, faceRecognition, enroll, retrievePerson
+import logging
+
+def setup_logging(level = logging.DEBUG) -> None:
+    root = logging.getLogger("pipeline")
+    root.setLevel(level)
+
+    fmt = logging.formater(
+        "%(asctime)s | %(levelname)-8s | %(name)-20s | %(threadname)-15s | %(message)s"
+        datefmt = "%H:%M:%S" 
+    )
+    console = logging.streamHandler(sys.stdout)
+    console.setLevel(logging.INFO)
+    console.setFormatter(fmt)
+
+    file = logging.fileHandler("pipeline.log")
+    file.setLevel(logging.DEBUG)
+    file.setFormatter(fmt)
+    root.addHandler(console)
+    root.addHandler(file)
 
 if __name__ == "__main__":
+    # Setup pipelines for each process as Queue objects
     frame_queue = Queue()
     stream_queue = Queue()
+    retrieve_queue = Queue()
     alert_queue = Queue()
     ffmpeg_queue = Queue()
     recording_queue = Queue()
     face_rec_queue = Queue()
-
+    """
+    direct functions through these pipelines and define 
+    which functions receive and pass through which pipelines
+    """
     p1 = Process(target=camera.run, args=(frame_queue, recording_queue))
     p2 = Process(target=yolo.run, args=(frame_queue, alert_queue, stream_queue, face_rec_queue))
     p3 = Process(target=faceRecognition.run, args=(face_rec_queue,))
