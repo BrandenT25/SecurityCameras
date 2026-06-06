@@ -2,7 +2,8 @@ from http.server import BaseHTTPRequestHandler, HTTPServer
 from queue import Empty
 import threading
 
-def run(ffmpeg_queue : Queue):
+def run(ffmpeg_queue):
+    server = None
     class StreamHandler(BaseHTTPRequestHandler):
         def log_message(self, format, *args):
             return

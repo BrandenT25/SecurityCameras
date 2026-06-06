@@ -87,7 +87,7 @@ def valid_face_angle(face, face_mesh, w : int, h : int, c) -> bool:
     return False
 
 
-def run(face_rec_queue : Queue, retrieve_queue: Queue ) -> None:
+def run(face_rec_queue, retrieve_queue) -> None:
     """
     Function That takes in the yolo frame and converts it into an rgb frame then recognized face locations
     and crops the images based on those locations
@@ -96,9 +96,12 @@ def run(face_rec_queue : Queue, retrieve_queue: Queue ) -> None:
         print("running facial recognition")
         mp_face_mesh = mp.solutions.face_mesh
         face_mesh = mp_face_mesh.FaceMesh(min_detection_confidence=0.5, min_tracking_confidence=0.5)
+        print("face mesh ready")  
         id = 0
         while True:
+            print("waiting for frame...")  
             frame = face_rec_queue.get()
+            print(f"face rec got a frame: {frame.shape}")
             if frame is None:
                 continue
             if frame.size == 0:

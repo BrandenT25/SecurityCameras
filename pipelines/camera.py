@@ -1,7 +1,7 @@
 import cv2
 import time
 
-def run(frame_queue : Queue , recorder_queue : Queue) -> None:
+def run(frame_queue, recorder_queue) -> None:
     '''
     Function sets up camera with cv2 and outputs frames to the recorder and YOLO scripts
     '''

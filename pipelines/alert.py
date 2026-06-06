@@ -1,4 +1,4 @@
-def run(alert_queue : Queue):
+def run(alert_queue):
     while True:
         alert = alert_queue.get()
         if alert is None:

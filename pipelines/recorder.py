@@ -3,7 +3,7 @@ import cv2
 import os
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 RECORDINGS_DIR = os.path.join(BASE_DIR, "recordings")
-def run(recorder_queue : Queue) -> None:
+def run(recorder_queue ) -> None:
     """
     function that takes in the frame from the orginal cv2 camera frame
     and writes the image to a video based on date and time

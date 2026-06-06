@@ -1,7 +1,8 @@
 from multiprocessing import Process, Queue
 from pipelines import alert, server, camera, ffmpegProducer, yolo, recorder, faceRecognition, enroll, retrievePerson
 import logging
-
+import time
+"""
 def setup_logging(level = logging.DEBUG) -> None:
     root = logging.getLogger("pipeline")
     root.setLevel(level)
@@ -19,7 +20,7 @@ def setup_logging(level = logging.DEBUG) -> None:
     file.setFormatter(fmt)
     root.addHandler(console)
     root.addHandler(file)
-
+"""
 if __name__ == "__main__":
     # Setup pipelines for each process as Queue objects
     frame_queue = Queue()
@@ -34,13 +35,15 @@ if __name__ == "__main__":
     which functions receive and pass through which pipelines
     """
     p1 = Process(target=camera.run, args=(frame_queue, recording_queue))
-    p2 = Process(target=yolo.run, args=(frame_queue, alert_queue, stream_queue, face_rec_queue))
-    p3 = Process(target=faceRecognition.run, args=(face_rec_queue,))
-    p4 = Process(target=ffmpegProducer.run, args=(stream_queue, ffmpeg_queue))
-    p5 = Process(target=recorder.run, args=(recording_queue,))
-    p6 = Process(target=alert.run, args=(alert_queue,))
-    p7 = Process(target=server.run, args=(ffmpeg_queue,))
-    p8 = Process(target=enroll.run, args = ())
+    p2 = Process(target=yolo.run, args=(frame_queue, stream_queue, face_rec_queue))
+    p3 = Process(target=faceRecognition.run, args=(face_rec_queue, retrieve_queue,))
+    time.sleep(30)
+    p4 = Process(target=retrievePerson.run, args=(retrieve_queue,))
+    p5 = Process(target=ffmpegProducer.run, args=(stream_queue, ffmpeg_queue))
+    p6 = Process(target=recorder.run, args=(recording_queue,))
+    p7 = Process(target=alert.run, args=(alert_queue,))
+    p8 = Process(target=server.run, args=(ffmpeg_queue,))
+    p9 = Process(target=enroll.run, args = ())
     p1.start()
     p2.start()
     p3.start()
@@ -49,6 +52,7 @@ if __name__ == "__main__":
     p6.start()
     p7.start()
     p8.start()
+    p9.start()
 
     p1.join()
     p2.join()
@@ -58,3 +62,4 @@ if __name__ == "__main__":
     p6.join()
     p7.join()
     p8.join()
+    p9.join()

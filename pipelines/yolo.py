@@ -5,7 +5,7 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 MODELS_DIR = os.path.join(BASE_DIR, "models")
 
-def run(frame_queue : Queue, retrieve_queue : Queue, stream_queue : Queue, face_rec_queue : Queue) -> None:
+def run(frame_queue , stream_queue , face_rec_queue ) -> None:
     """
     Function that uses yolo to indetify people. Must pass a certain confidence interval and to alert must be on the
     screen for a certain amount of time.
@@ -53,6 +53,7 @@ def run(frame_queue : Queue, retrieve_queue : Queue, stream_queue : Queue, face_
                     if start_time - last_alert >= ALERT_COOLDOWN:
                     # Alert Logic
                         face_rec_queue.put(frame)
+                        print(f"frame sent to face_rec_queue, qsize: {face_rec_queue.qsize()}")
                         alert_cooldowns[track_id] = start_time
                         del person_timers[track_id]
                         if track_id in last_seen_timers:
