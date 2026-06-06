@@ -3,6 +3,8 @@ recordings/*
 
 models/*
 !models/.gitkeep
+!models/insightface/
+models/insightface/*
 !models/insightface/.gitkeep
 
 data/clusters/*
@@ -13,7 +15,7 @@ data/faces/*
 data/faces/processed/*
 !data/faces/processed/.gitkeep
 
-people/people.json
+data/people/people.json
 
 __pycache__/
 **/__pycache__/
