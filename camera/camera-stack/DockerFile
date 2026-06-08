@@ -1,0 +1,13 @@
+FROM python:3.13-alpine
+
+ARG CAMERA_IP
+ARG CAMERA_NAME
+
+ENV CAMERA_IP=$RTSP_ADDR
+ENV CAMERA_NAME=$CAMERA_NAME
+
+WORKDIR /app
+COPY requirements.txt .
+COPY . .
+
+CMD["bash", "run.sh"]
