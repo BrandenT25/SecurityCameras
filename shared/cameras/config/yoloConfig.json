@@ -1,6 +1,6 @@
 {
-    "alert_delay": 2,
-    "alert_cooldown": 30,
+    "delay": 2,
+    "cooldown": 30,
     "grace_period": 4.0,
     "model": "../shared/models/yolo/yolov8n.pt"
 }

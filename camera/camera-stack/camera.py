@@ -1,8 +1,10 @@
 import cv2
 import time
 import os
+
 CAMERA_IP = os.environ("rtsp_addr")
 CAMERA_NAME = os.environ("rtsp_name")
+
 
 def run(yolo_queue) -> None:
     cam = cv2.VideoCapture(CAMERA_IP)
@@ -18,4 +20,3 @@ def run(yolo_queue) -> None:
             pass
 
     yolo_queue.put(frame)
-    
