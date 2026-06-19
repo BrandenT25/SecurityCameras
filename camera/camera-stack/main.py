@@ -8,12 +8,18 @@ import yolo
 def main() -> None:
     yolo_queue = Queue()
     face_processing_queue = Queue()
-    p1 = Process(target=(camera.run), args=(yolo_queue, face_processing_queue,))
-    p2 = Process(target=(face_processing.run), args=(face_processing_queue,))
+    p1 = Process(target=camera.run, args=(yolo_queue,))
+    p2 = Process(target=yolo.run, args=(yolo_queue,face_processing_queue,))
+    p3 = Process(target=face_processing.run, args=(face_processing_queue,))
 
-    p1.start
-    p2.start
-    
+    p1.start()
+    p2.start()
+    p3.start()
 
-    p1.join
-    p2.join
+    p1.join()
+    p2.join()
+    p3.join()
+
+
+if __name__ == "__main__":
+    main()

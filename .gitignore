@@ -1,0 +1,3 @@
+.venv
+.ruff_cache
+camera/camera-stack/__pycache__/

@@ -10,4 +10,4 @@ WORKDIR /app
 COPY requirements.txt .
 COPY . .
 
-CMD["bash", "run.sh"]
+CMD ["bash", "run.sh"]
