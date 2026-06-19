@@ -36,12 +36,13 @@ async def getAV():
         def on_progress(progress):
             currentDate = date.today()
             currentHour = datetime.now().hour
-            if currentDate != startDate or currentHour != startHour:
+            if currentDate != startDate || currentHour != startHour:
                 state["restart"] = True
                 try:
                     ffmpeg.terminate()
                 except:
                     pass
+            
 
         try:
             await ffmpeg.execute()
@@ -56,7 +57,6 @@ async def getAV():
             await asyncio.sleep(5)
             startDate = date.today()
             startHour = datetime.now().hour
-
 
 if __name__ == "__main__":
     asyncio.run(getAV())
